@@ -20,6 +20,7 @@ score = 0
 bonus = 0
 end = time() + TIME_LIMIT
 bub_id = list()
+bullet_id = list()
 bub_r = list()
 bub_speed = list()
 MIN_BUB_R = 10
@@ -46,6 +47,21 @@ def move_ship(event):
     elif event.keysym == 'Right':
         c.move(ship_id, SHIP_SPD, 0)
         c.move(ship_id2, SHIP_SPD, 0)
+
+def shoot(event):
+    if event.keysym == 'space':
+        create_bullet()
+        print("Spatie")
+
+def handle_keys(event):
+    move_ship(event)
+    shoot(event)
+
+def create_bullet():
+    x, y = get_coords(ship_id)
+    id1 = c.create_rectangle(x + 20, y - 1, x + 30, y + 1, outline='black', fill='black')
+    bullet_id.append(id1)
+
 
 #maakt bubbels
 def create_bubble():
@@ -77,6 +93,10 @@ def move_bubbles():
     for i in range(len(bub_id)):
         c.move(bub_id[i], -bub_speed[i], 0)
 
+def move_bullets():
+    for i in range(len(bullet_id)):
+        c.move(bullet_id[i], 10, 0)
+
 def get_coords(id_num):
     pos = c.coords(id_num)
     x = (pos[0] + pos[2])/2
@@ -95,6 +115,15 @@ def clean_up_bubs():
         if x < -GAP:
             del_bubble(i)
 
+def del_bullet(i):
+    c.delete(bullet_id[i])
+    del bullet_id[i]
+
+def clean_up_bullets():
+    for i in range(len(bullet_id)-1, -1, -1):
+        x, y = get_coords(bullet_id[i])
+        if x > WIDTH + GAP:
+            del_bullet(i)
 
 def distance(id1, id2):
     x1, y1 = get_coords(id1)
@@ -109,17 +138,29 @@ def collision():
             del_bubble(bub)
     return points
 
+def hit():
+    points = 0  
+    for bub in range(len(bub_id)-1, -1, -1):
+        for i in range(len(bullet_id)-1,-1,-1):
+            if distance(bullet_id[i], bub_id[bub]) < (bub_r[bub]):
+                points += (bub_r[bub]  + bub_speed[bub])
+                del_bubble(bub)
+                del_bullet(i)
+    return points
+
 def sluitaf():
     global running
     running = False
 
 #Initialisatie
+print("Begin van het spel")
 window = Tk()
 window.protocol("WM_DELETE_WINDOW", sluitaf)
 window.title('Bellenschieter')
 c = Canvas(window, width=WIDTH, height=HEIGHT, bg='DarkBlue')
 c.pack()
-c.bind_all('<Key>', move_ship)
+c.bind_all('<Key>', handle_keys)
+c.bind_all('<KeyPress>', handle_keys)
 
 ship_id = c.create_polygon(5, 5, 5, 25, 30, 15, fill='red')
 ship_id2 = c.create_oval(0, 0, 30, 30, outline='red')
@@ -133,8 +174,11 @@ while time() < end and running:
     if randint(1, BUB_CHANCE) == 1:
         create_bubble()
     move_bubbles()
+    move_bullets()
     clean_up_bubs()
+    clean_up_bullets()
     score += collision()
+    score += hit()
     if (int(score / BONUS_SCORE)) > bonus:
         bonus += 1
         end += TIME_LIMIT
