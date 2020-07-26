@@ -18,6 +18,7 @@ running = True
 BONUS_SCORE = 1000
 score = 0
 bonus = 0
+levens = 10
 end = time() + TIME_LIMIT
 bub_id = list()
 bullet_id = list()
@@ -28,9 +29,12 @@ MAX_BUB_R = 30
 MAX_BUB_SPD = 10
 GAP = 100
 
+def show_levens(levens):
+    c.itemconfig(levens_text, text=str(levens))
 
 def show_score(score):
     c.itemconfig(score_text, text=str(score))
+
 def show_time(time_left):
     c.itemconfig(time_text, text=str(time_left))
 
@@ -131,12 +135,12 @@ def distance(id1, id2):
     return sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
 def collision():
-    points = 0  
+    levens = 0  
     for bub in range(len(bub_id)-1, -1, -1):
         if distance(ship_id2, bub_id[bub]) < (SHIP_R + bub_r[bub]):
-            points += (bub_r[bub]  + bub_speed[bub])
+            levens = -1
             del_bubble(bub)
-    return points
+    return levens
 
 def hit():
     points = 0  
@@ -165,23 +169,26 @@ c.bind_all('<KeyPress>', handle_keys)
 ship_id = c.create_polygon(5, 5, 5, 25, 30, 15, fill='red')
 ship_id2 = c.create_oval(0, 0, 30, 30, outline='red')
 #maakt de time en de score
-c.create_text(50, 30, text='TIME', fill='white' )
+c.create_text(50, 30, text='TIJD', fill='white' )
 c.create_text(150, 30, text='SCORE', fill='White' )
+c.create_text(250, 30, text='LEVENS', fill='White' )
 time_text = c.create_text(50, 50, fill='white' )
 score_text = c.create_text(150, 50, fill='white' )
+levens_text = c.create_text(250, 50, fill='white' )
 #MAIN GAME LOOP
-while time() < end and running:
+while levens > 0 and running:
     if randint(1, BUB_CHANCE) == 1:
         create_bubble()
     move_bubbles()
     move_bullets()
     clean_up_bubs()
     clean_up_bullets()
-    score += collision()
     score += hit()
+    levens += collision()
     if (int(score / BONUS_SCORE)) > bonus:
         bonus += 1
         end += TIME_LIMIT
+    show_levens(levens)
     show_score(score)
     show_time(int(end - time()))
     window.update()
@@ -193,4 +200,7 @@ c.create_text(MID_X, MID_Y, \
 c.create_text(MID_X, MID_Y + 30, \
     text='Score: '+ str(score),fill='white')
 c.create_text(MID_X, MID_Y + 45, \
-    text='Bonus time: '+ str(bonus*TIME_LIMIT), fill='white')   
+    text='Bonus time: '+ str(bonus*TIME_LIMIT), fill='white')
+c.create_text(MID_X, MID_Y + 60, \
+    text='Levens: '+ str(levens),fill='white')
+#sleep(3)
