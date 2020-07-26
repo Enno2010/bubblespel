@@ -55,7 +55,7 @@ def move_ship(event):
 def shoot(event):
     if event.keysym == 'space':
         create_bullet()
-        print("Spatie")
+       # print("Spatie")
 
 def handle_keys(event):
     move_ship(event)
@@ -145,11 +145,14 @@ def collision():
 def hit():
     points = 0  
     for bub in range(len(bub_id)-1, -1, -1):
+        delBub = False
         for i in range(len(bullet_id)-1,-1,-1):
             if distance(bullet_id[i], bub_id[bub]) < (bub_r[bub]):
                 points += (bub_r[bub]  + bub_speed[bub])
-                del_bubble(bub)
+                delBub = True
                 del_bullet(i)
+        if delBub:
+            del_bubble(bub)
     return points
 
 def sluitaf():
