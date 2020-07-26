@@ -14,6 +14,7 @@ score = 0
 #nuttige dingen
 BUB_CHANCE = 10
 TIME_LIMIT = 30
+running = True
 BONUS_SCORE = 1000
 score = 0
 bonus = 0
@@ -108,8 +109,13 @@ def collision():
             del_bubble(bub)
     return points
 
+def sluitaf():
+    global running
+    running = False
+
 #Initialisatie
 window = Tk()
+window.protocol("WM_DELETE_WINDOW", sluitaf)
 window.title('Bellenschieter')
 c = Canvas(window, width=WIDTH, height=HEIGHT, bg='DarkBlue')
 c.pack()
@@ -123,7 +129,7 @@ c.create_text(150, 30, text='SCORE', fill='White' )
 time_text = c.create_text(50, 50, fill='white' )
 score_text = c.create_text(150, 50, fill='white' )
 #MAIN GAME LOOP
-while time() < end:
+while time() < end and running:
     if randint(1, BUB_CHANCE) == 1:
         create_bubble()
     move_bubbles()
