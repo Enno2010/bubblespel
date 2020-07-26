@@ -169,9 +169,9 @@ c.bind_all('<KeyPress>', handle_keys)
 ship_id = c.create_polygon(5, 5, 5, 25, 30, 15, fill='red')
 ship_id2 = c.create_oval(0, 0, 30, 30, outline='red')
 #maakt de time en de score
-c.create_text(50, 30, text='TIME', fill='white' )
+c.create_text(50, 30, text='TIJD', fill='white' )
 c.create_text(150, 30, text='SCORE', fill='White' )
-c.create_text(150, 30, text='LIVES', fill='White' )
+c.create_text(250, 30, text='LEVENS', fill='White' )
 time_text = c.create_text(50, 50, fill='white' )
 score_text = c.create_text(150, 50, fill='white' )
 levens_text = c.create_text(250, 50, fill='white' )
@@ -181,10 +181,10 @@ while levens > 0 and running:
         create_bubble()
     move_bubbles()
     move_bullets()
-    clean_up_bubs()
-    clean_up_bullets()
     score += hit()
     levens += collision()
+    clean_up_bubs()
+    clean_up_bullets()
     if (int(score / BONUS_SCORE)) > bonus:
         bonus += 1
         end += TIME_LIMIT
