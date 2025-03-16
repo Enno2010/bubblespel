@@ -161,6 +161,7 @@ def sluitaf():
 
 #Initialisatie
 print("Begin van het spel")
+print("Pijltjes toetsen om te bewegen, spatie om te schieten")
 window = Tk()
 window.protocol("WM_DELETE_WINDOW", sluitaf)
 window.title('Bellenschieter')
